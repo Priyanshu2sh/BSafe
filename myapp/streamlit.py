@@ -31,7 +31,7 @@ CLASS_MAPPING = {
     "NO-Mask": "No Mask Detected", "No Mask": "No Mask Detected",
 
     # Gloves
-    "Gloves": "Gloves", "luvas": "Gloves",
+    "Gloves": "Gloves", "glove": "Gloves", "hand_protection": "Gloves", "gloves": "Gloves",
 
     # Harness
     "Harness": "Safety Harness", "Safety Harness": "Safety Harness",
@@ -59,7 +59,7 @@ CLASS_MAPPING = {
 
 COMMON_GEAR_ITEMS = [
     "Helmet", "Goggles", "Safety Vest", "Face Mask",
-    "Safety Harness", "Safety Shoes",
+    "Safety Harness", "Safety Shoes", "Gloves"
 ]
 
 # Load YOLO once
@@ -96,8 +96,11 @@ def detect_safety_gear(image_bytes):
             gear_confidences[mapped_name] = max(gear_confidences[mapped_name], conf)
 
         # Roboflow detection
-        rf_models = [("deteccao-de-epi-v3/4", (0, 255, 0)),
-                     ("harness-knfmk/3", (0, 0, 255))]
+        rf_models = [
+            ("deteccao-de-epi-v3/4", (0, 255, 0)),       # General PPE
+            ("harness-knfmk/3", (0, 0, 255)),            # Harness
+            ("ppe-detection-lnxkm/4", (255, 0, 0))       # Gloves
+        ]
 
         combined_img = image.copy()
 

@@ -1,13 +1,10 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
-from .chatbot import query_mistral, format_response_as_points
-from .utils import get_chunks_from_pdf
+from .chatbot import get_safety_response
+from .utils import *
 from asgiref.sync import sync_to_async
 
 
-# Replace these with your actual functions and data
-# from .utils import query_mistral, format_response_as_points
-# chunks = [...]  # Your predefined list of chunks
 class Test(AsyncWebsocketConsumer):
     async def connect(self):
         await self.accept()
@@ -45,36 +42,12 @@ class ChatbotConsumer(AsyncWebsocketConsumer):
             await self.send(text_data=json.dumps({'error': 'User input is required.'}))
             return
 
-        general_keywords = [
-            "hello", "hi", "hey", "good morning", "good afternoon", "good evening",
-            "how are you", "what's up", "goodbye", "bye", "see you", "thank you", "thanks"
-        ]
-
-        # Determine context
-        if any(greet in text_data.lower() for greet in general_keywords):
-            context = ""
-        else:
-            relevant_chunks = []
-            user_words = set(text_data.lower().split())
-            chunks = get_chunks_from_pdf()
-            for chunk in chunks:
-                chunk_words = set(chunk.lower().split())
-                if user_words & chunk_words:
-                    relevant_chunks.append(chunk)
-            context = " ".join(relevant_chunks[:2]) if relevant_chunks else (chunks[0] if chunks else "")
-
-        # Maintain history
-        history = self.scope['session'].get('chat_history', [])[-5:]
-
         # Get chatbot response
-        bot_response = query_mistral(text_data, context, history)
-        formatted_response = format_response_as_points(bot_response)
-        print(f"Formatted Response: {formatted_response}")
+        bot_response = get_safety_response(text_data)
+
+        print(f"Formatted Response: {bot_response}")
         # Update session history
-        history.append({'user': text_data, 'bot': bot_response})
-        self.scope['session']['chat_history'] = history
         await sync_to_async(self.scope['session'].save)()
 
         # Send response to client
-        for msg in formatted_response:
-            await self.send(text_data=msg)
+        await self.send(text_data=bot_response)
