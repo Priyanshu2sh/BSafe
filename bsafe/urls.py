@@ -21,4 +21,5 @@ from myapp import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("api/upload-image", views.ImageUploadAPI.as_view(), name="upload-image"),
+    path('', include('myapp.urls')),
 ]

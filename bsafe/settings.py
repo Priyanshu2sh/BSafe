@@ -84,7 +84,8 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            'hosts': [('127.0.0.1', 6379)],
+            # 'hosts': [('127.0.0.1', 6379)],
+            "hosts": [("redis", 6379)],
         },
     },
 }
@@ -143,7 +144,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+FORCE_SCRIPT_NAME = '/bsafe'
+STATIC_URL = '/bsafe/static/'
+MEDIA_URL = '/bsafe/media/'
+
+# STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
