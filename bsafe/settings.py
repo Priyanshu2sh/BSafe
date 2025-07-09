@@ -148,6 +148,7 @@ FORCE_SCRIPT_NAME = '/bsafe'
 STATIC_URL = '/bsafe/static/'
 MEDIA_URL = '/bsafe/media/'
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # STATIC_URL = 'static/'
 
 # Default primary key field type
